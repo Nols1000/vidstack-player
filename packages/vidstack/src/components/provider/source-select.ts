@@ -15,6 +15,7 @@ import { isVideoQualitySrc, type Src } from '../../core/api/src-types';
 import { AudioProviderLoader } from '../../providers/audio/loader';
 import { DASHProviderLoader } from '../../providers/dash/loader';
 import { HLSProviderLoader } from '../../providers/hls/loader';
+import { TwitchProviderLoader } from '../../providers/twitch/loader';
 import type { MediaProviderLoader } from '../../providers/types';
 import { VideoProviderLoader } from '../../providers/video/loader';
 import { VimeoProviderLoader } from '../../providers/vimeo/loader';
@@ -54,7 +55,8 @@ export class SourceSelection {
       AUDIO_LOADER = new AudioProviderLoader(),
       YOUTUBE_LOADER = new YouTubeProviderLoader(),
       VIMEO_LOADER = new VimeoProviderLoader(),
-      EMBED_LOADERS = [YOUTUBE_LOADER, VIMEO_LOADER];
+      TWITCH_LOADER = new TwitchProviderLoader(),
+      EMBED_LOADERS = [YOUTUBE_LOADER, VIMEO_LOADER, TWITCH_LOADER];
 
     this.#loaders = computed<MediaProviderLoader[]>(() => {
       const remoteLoader = media.$state.remotePlaybackLoader();
@@ -362,6 +364,8 @@ function inferType(src: unknown, type?: string) {
     return 'video/object';
   } else if (src.includes('youtube') || src.includes('youtu.be')) {
     return 'video/youtube';
+  } else if (src.includes('twitch')) {
+    return 'video/twitch';
   } else if (
     src.includes('vimeo') &&
     !src.includes('progressive_redirect') &&
