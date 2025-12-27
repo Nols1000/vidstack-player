@@ -1,7 +1,9 @@
 import { createScope, effect, signal } from 'maverick.js';
 import { isString, type DeferredPromise } from 'maverick.js/std';
 
-import { TimeRange, type MediaContext, type Src } from '../../core';
+import type { MediaContext } from '../../core/api/media-context';
+import type { Src } from '../../core/api/src-types';
+import { TimeRange } from '../../core/time-ranges';
 import { preconnect } from '../../utils/network';
 import { timedPromise } from '../../utils/promise';
 import { EmbedProvider } from '../embed/EmbedProvider';
@@ -60,7 +62,7 @@ export class TwitchProvider
   protected _pausePromise: DeferredPromise<void, string> | null = null;
 
   protected get _notify() {
-    return this._ctx.delegate._notify;
+    return this._ctx.notify;
   }
 
   constructor(
@@ -87,12 +89,11 @@ export class TwitchProvider
   }
 
   preconnect() {
-    preconnect(this._getOrigin());
+    preconnect(this.getOrigin());
   }
 
   override setup() {
     super.setup();
-    this._watchSrc();
     effect(this._watchVideoId.bind(this));
     this._notify('provider-setup', this);
   }
@@ -155,7 +156,7 @@ export class TwitchProvider
     this._currentSrc = src as Src<string>;
   }
 
-  protected override _getOrigin() {
+  protected getOrigin() {
     return 'https://player.twitch.tv';
   }
 
@@ -166,15 +167,15 @@ export class TwitchProvider
     const channel = this._channel();
 
     if (!videoId && !channel) {
-      this._src.set('');
+      this.src.set('');
       return;
     }
 
-    this._src.set(this._getOrigin());
+    this.src.set(this.getOrigin());
     this._notify('load-start');
   }
 
-  protected override _buildParams(): TwitchParams {
+  protected buildParams(): TwitchParams {
     const { muted } = this._ctx.$state,
       channel = this.channel,
       video = this.videoId;
@@ -192,8 +193,8 @@ export class TwitchProvider
   }
 
   protected _remote<T extends TwitchCommand>(command: T, arg: TwitchCommandArg[T]) {
-    // EmbedProvider._postMessage uses JSON.stringify, but the Twitch embed requires a native JS object
-    this._iframe.contentWindow?.postMessage(
+    // EmbedProvider.postMessage uses JSON.stringify, but the Twitch embed requires a native JS object
+    this.iframe.contentWindow?.postMessage(
       {
         eventName: command,
         params: arg,
@@ -203,7 +204,7 @@ export class TwitchProvider
     );
   }
 
-  protected override _onLoad(): void {}
+  protected onLoad(): void {}
 
   protected _onReady(trigger: Event) {
     this._notify('loaded-metadata');
@@ -216,7 +217,7 @@ export class TwitchProvider
       this._notify('stream-type-change', 'on-demand');
     }
 
-    this._ctx.delegate._ready(undefined, trigger);
+    this._ctx.delegate.ready(undefined, trigger);
   }
 
   protected _onPlaying(trigger: Event) {
@@ -331,10 +332,7 @@ export class TwitchProvider
     }
   }
 
-  protected override _onMessage(
-    { eventName, params }: TwitchMessage<TwitchEvent>,
-    event: MessageEvent,
-  ) {
+  protected onMessage({ eventName, params }: TwitchMessage<TwitchEvent>, event: MessageEvent) {
     if (!eventName) return;
     this._onMethod(eventName, params, event);
   }

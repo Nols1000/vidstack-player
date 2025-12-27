@@ -1,4 +1,4 @@
-import type { VideoQuality } from '../../core';
+import type { VideoQuality } from '../../core/quality/video-quality';
 import type { TwitchQuality } from './embed/event';
 
 /**
