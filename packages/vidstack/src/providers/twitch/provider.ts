@@ -300,6 +300,45 @@ export class TwitchProvider
     }
   }
 
+  protected _onError(trigger: Event) {
+    this._notify(
+      'error',
+      {
+        message: 'Twitch embed error occurred.',
+        code: 4,
+      },
+      trigger,
+    );
+  }
+
+  protected _onPlaybackBlocked(trigger: Event) {
+    this._notify(
+      'error',
+      {
+        message: 'Twitch playback was blocked. User interaction may be required.',
+        code: 3,
+      },
+      trigger,
+    );
+  }
+
+  protected _onOffline(trigger: Event) {
+    // Stream went offline
+    this._notify(
+      'error',
+      {
+        message: 'Stream is offline.',
+        code: 2,
+      },
+      trigger,
+    );
+  }
+
+  protected _onOnline(trigger: Event) {
+    // Stream came back online - could notify or just let playback resume
+    // For now, just a no-op, but could be useful for UI notifications
+  }
+
   protected _onMethod<T extends keyof TwitchEventPayload>(
     event: T,
     params: TwitchEventPayload[T],
@@ -326,6 +365,25 @@ export class TwitchProvider
         break;
       case 'seek':
         this._onSeeked(trigger);
+        break;
+      case 'error':
+        this._onError(trigger);
+        break;
+      case 'playbackBlocked':
+        this._onPlaybackBlocked(trigger);
+        break;
+      case 'offline':
+        this._onOffline(trigger);
+        break;
+      case 'online':
+        this._onOnline(trigger);
+        break;
+      // Redundant events that we can ignore (handled by primary events)
+      case 'video.pause':
+      case 'video.play':
+      case 'video.ready':
+      case 'authenticate':
+      case 'captions':
         break;
       default:
         break;
