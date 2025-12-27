@@ -39,6 +39,15 @@ export class TwitchProvider
 
   readonly scope = createScope();
 
+  /**
+   * Array of parent domains for cross-domain embedding. Required by Twitch for security.
+   * The player will only work when embedded on domains listed in this array.
+   *
+   * @defaultValue `[window.location.hostname]`
+   * @see {@link https://dev.twitch.tv/docs/embed/video-and-clips/#embedding-twitch-live-streams-and-vods}
+   */
+  parent: string[] = [window.location.hostname];
+
   protected _channel = signal<string | null>(null);
   protected _videoId = signal<string | null>(null);
   protected _state: TwitchState['playback'] = 'Idle';
@@ -172,8 +181,7 @@ export class TwitchProvider
     const params: TwitchParams = {
       autoplay: false,
       muted: muted(),
-      // TODO: this is required, probably should find a better solution to configure it
-      parent: [window.location.hostname],
+      parent: this.parent,
     };
     if (channel) {
       params.channel = channel;
