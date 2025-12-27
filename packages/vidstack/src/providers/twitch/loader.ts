@@ -14,9 +14,15 @@ export class TwitchProviderLoader implements MediaProviderLoader<TwitchProvider>
 
   preconnect() {
     const connections = [
-      // TODO: these are probably not complete
-      'static-cdn.jtvnw.net',
-      'static.twitchcdn.net',
+      // Embed player
+      'https://player.twitch.tv',
+      // Static assets and thumbnails
+      'https://static-cdn.jtvnw.net',
+      'https://static.twitchcdn.net',
+      // Video streaming
+      'https://usher.ttvnw.net',
+      // GraphQL API
+      'https://gql.twitch.tv',
     ];
 
     for (const url of connections) {
