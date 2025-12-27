@@ -306,9 +306,7 @@ export class TwitchProvider
   ) {
     switch (event) {
       case 'UPDATE_STATE':
-        // TODO: fix this
-        //@ts-expect-error
-        this._onStateUpdate(params, trigger);
+        this._onStateUpdate(params as TwitchState, trigger);
         break;
       case 'ended':
         this._onEnded(trigger);
