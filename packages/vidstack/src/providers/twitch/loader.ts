@@ -46,13 +46,19 @@ export class TwitchProviderLoader implements MediaProviderLoader<TwitchProvider>
     return new (await import('./provider')).TwitchProvider(this.target, ctx);
   }
 
-  // TODO
-  // async loadPoster(src: Src, ctx: MediaContext, abort: AbortController): Promise<string | null> {
-  //   const { findTwitchPoster, resolveTwitchVideoId } = await import('./utils');
-  //
-  //   const videoId = isString(src.src) && resolveTwitchVideoId(src.src);
-  //   if (videoId) return findTwitchPoster(videoId, abort);
-  //
-  //   return null;
-  // }
+  async loadPoster(src: Src, ctx: MediaContext, abort: AbortController): Promise<string | null> {
+    const { findTwitchPoster, resolveTwitchSource } = await import('./utils');
+
+    if (!isString(src.src)) return null;
+
+    const { channel, videoId } = resolveTwitchSource(src.src);
+
+    if (channel) {
+      return findTwitchPoster(channel, true, abort);
+    } else if (videoId) {
+      return findTwitchPoster(videoId, false, abort);
+    }
+
+    return null;
+  }
 }
