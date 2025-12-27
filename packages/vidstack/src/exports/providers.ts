@@ -40,3 +40,7 @@ export type { VimeoProvider } from '../providers/vimeo/provider';
 // YouTube
 export { YouTubeProviderLoader } from '../providers/youtube/loader';
 export type { YouTubeProvider } from '../providers/youtube/provider';
+
+// Twitch
+export { TwitchProviderLoader } from '../providers/twitch/loader';
+export type { TwitchProvider } from '../providers/twitch/provider';
