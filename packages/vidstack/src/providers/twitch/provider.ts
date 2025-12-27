@@ -13,6 +13,24 @@ import type { TwitchCommandMessage, TwitchMessage } from './embed/message';
 import type { TwitchParams } from './embed/params';
 import { resolveTwitchSource, twitchQualityToVideoQuality } from './utils';
 
+/**
+ * This provider enables loading videos and live streams from Twitch (twitch.tv) via embeds.
+ *
+ * @docs {@link https://www.vidstack.io/docs/player/providers/twitch}
+ * @see {@link https://dev.twitch.tv/docs/embed}
+ * @example
+ * ```html
+ * <!-- Live Stream -->
+ * <media-player src="https://www.twitch.tv/channelname">
+ *   <media-provider></media-provider>
+ * </media-player>
+ *
+ * <!-- VOD -->
+ * <media-player src="https://www.twitch.tv/videos/1234567890">
+ *   <media-provider></media-provider>
+ * </media-player>
+ * ```
+ */
 export class TwitchProvider
   extends EmbedProvider<TwitchMessage<TwitchEvent>>
   implements MediaProviderAdapter
